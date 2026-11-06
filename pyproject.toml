@@ -1,0 +1,67 @@
+[project]
+name = "levantamento_estoque"
+version = "0.1.0"
+description = "Software de levantamento de estoque com leitor de código de barras físico"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "redis>=5.2",
+    "uvicorn[standard]>=0.34",
+    "httpx>=0.28",
+    "pyserial>=3.5",
+    "pydantic-settings>=2.2",
+    "pyserial-asyncio>=0.6",
+]
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["estoque*"]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.33.0",
+    "pytest>=8.0",
+    "ruff>=0.8.0",
+    "taskipy>=1.14.0",
+    "rich>=15.0.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "PLC0415"]
+ignore = []
+
+[tool.taskipy.tasks]
+run = "python -m estoque.cli.servidor"
+cli = "python -m estoque.cli.leitor"
+lint = "ruff check ."
+format = "ruff format ."
+test = "pytest"
+type-check = "basedpyright"
+
+[tool.basedpyright]
+include = ["estoque"]
+exclude = ["**/__pycache__", ".venv", ".ruff_cache"]
+allowedUntypedLibraries = ["serial_asyncio"]
+typeCheckingMode = "strict"
+pythonVersion = "3.12"
+# O Tornado expõe uma sobrecarga parcialmente tipada para RequestHandler.finish.
+# Não exigir cast apenas para esse tipo externo desconhecido.
+reportUnknownMemberType = "none"
+
+[tool.coverage.run]
+source = ["estoque"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 95
+precision = 2
+show_missing = true
+exclude_also = ["if __name__ == .__main__.:"]

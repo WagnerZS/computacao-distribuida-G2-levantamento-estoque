@@ -1,0 +1,52 @@
+[
+    {
+        "id": 1,
+        "nome": "Arroz 5kg",
+        "cod_barras": "7891000100011"
+    },
+    {
+        "id": 2,
+        "nome": "Feijão 1kg",
+        "cod_barras": "7891000100028"
+    },
+    {
+        "id": 3,
+        "nome": "Macarrão 500g",
+        "cod_barras": "7891000100035"
+    },
+    {
+        "id": 4,
+        "nome": "Açúcar 1kg",
+        "cod_barras": "7891000100042"
+    },
+    {
+        "id": 5,
+        "nome": "Café 500g",
+        "cod_barras": "7891000100059"
+    },
+    {
+        "id": 6,
+        "nome": "Leite 1L",
+        "cod_barras": "7891000100066"
+    },
+    {
+        "id": 7,
+        "nome": "Refrigerante 2L",
+        "cod_barras": "7891000100073"
+    },
+    {
+        "id": 8,
+        "nome": "Biscoito 400g",
+        "cod_barras": "7891000100080"
+    },
+    {
+        "id": 9,
+        "nome": "Óleo 900ml",
+        "cod_barras": "7891000100097"
+    },
+    {
+        "id": 10,
+        "nome": "Sal 1kg",
+        "cod_barras": "7891000100103"
+    }
+]
