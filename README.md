@@ -79,9 +79,34 @@ curl -X POST http://localhost:8000/api/v1/inventory/readings \
   -d '{"barcode": "7891000100011", "device_id": "raspberry-pi-01"}'
 ```
 
-## Cliente serial de compatibilidade
+## Leitor GPIO na Raspberry Pi
 
-O comando abaixo mantém a ponte serial usada na versão 1, mas troca o envio WebSocket por REST. No Raspberry, a futura leitura direta dos GPIOs pode chamar o mesmo endpoint.
+O leitor GPIO implementa o comportamento do sketch `leitor-codigo-barras.ino`. Os números abaixo usam a numeração BCM da Raspberry Pi (não os números dos pinos do Arduino):
+
+| Sinal | Pino no sketch Arduino | GPIO Raspberry (BCM) | Pino físico |
+|---|---:|---:|---:|
+| Saída do sensor | 2 | 17 | 11 |
+| LED | 8 | 27 | 13 |
+| Buzzer | 9 | 22 | 15 |
+
+O leitor usa `DigitalInputDevice(17, pull_up=True)` e consulta `sensor.value` a cada 0,2 s. Quando o valor e `0`, registra "OBSTACULO DETECTADO!" e envia uma leitura a API; se a API estiver indisponivel ou recusar a leitura, tenta novamente a cada 2 segundos ate obter sucesso. O envio HTTP e o efeito do LED/buzzer rodam em tarefas isoladas, entao uma falha inesperada nelas e registrada sem encerrar a leitura do sensor. Enquanto o sensor continuar detectando o mesmo obstaculo, nao inicia um novo envio independente. Quando volta a `1`, registra "CAMINHO LIVRE". O LED e o buzzer PWM reproduzem o efeito do sketch.
+
+Use um resistor adequado em série com o LED. Os pinos GPIO da Raspberry Pi são de 3,3 V: não aplique 5 V ao sensor ou às entradas GPIO; verifique o nível lógico da saída do sensor e use adaptação de nível quando necessário. Não conecte um buzzer que exceda a corrente permitida por um GPIO diretamente.
+
+Execute na Raspberry Pi:
+
+```bash
+sudo apt install python3-lgpio
+uv venv --system-site-packages
+uv sync
+uv run task cli-gpio
+```
+
+O leitor seleciona explicitamente o backend `lgpio`, evitando o backend `native` baseado em `/sys/class/gpio`. Se ja existir um ambiente `.venv` sem acesso aos pacotes do sistema, recrie-o com `uv venv --clear --system-site-packages` antes de executar `uv sync`. Verifique tambem se o usuario tem permissao de leitura e escrita em `/dev/gpiochip*`.
+
+Configure `ESTOQUE_API_URL` no `.env` com o endereco acessivel da API. `localhost` so funciona quando a API roda na propria Raspberry Pi; se ela estiver em outro computador, use o IP desse computador, por exemplo `http://192.168.1.10:8000`. A dependencia `gpiozero` e instalada junto com as demais. O log do leitor mostra o estado do sensor e confirma cada deteccao e envio.
+
+## Cliente serial de compatibilidade
 
 ```env
 ESTOQUE_API_URL=http://IP_DO_SERVIDOR:8000

@@ -25,11 +25,11 @@ async def run(settings: Settings) -> None:
                 inventory = cast(dict[str, int], data["inventory"])
                 logger.info(
                     "Leitura registrada | Produto: %s | Quantidade total: %s",
-                    product.get("nome", "não identificado"),
+                    product.get("nome", "nao identificado"),
                     inventory["total_items"],
                 )
             except httpx.HTTPError as error:
-                logger.error("Não foi possível enviar a leitura para a API: %s", error)
+                logger.error("Nao foi possivel enviar a leitura para a API: %s", error)
 
         def callback(value: bool) -> None:
             asyncio.create_task(on_reading(value))
