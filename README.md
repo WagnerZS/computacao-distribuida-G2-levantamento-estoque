@@ -1,128 +1,122 @@
-# Levantamento de Estoque — versão 2
+# Gerenciamento de Estoque — G2
 
-Backend REST para levantamento de estoque usando Raspberry Pi, FastAPI e Redis. O sensor continua produzindo um evento de detecção; o Raspberry envia esse evento para a API via HTTP. O frontend será um cliente separado da API.
+Backend REST e sensor de proximidade (KY-032) para simular leitor de código de barras para Raspberry Pi. A detecção do sensor não depende da API estar ligada: cada detecção real sorteia um produto localmente e é persistida em uma fila SQLite no Raspberry. O lote só é enviado quando o operador clica em **Enviar** na tela do leitor.
 
 ## Arquitetura
 
-```text
-Sensor KY-032 + Raspberry Pi
-          │ HTTP POST
-          ▼
-FastAPI (API REST) ───────► Redis
-          │                    ├─ produtos em cache
-          │                    ├─ inventário atual
-          │                    ├─ eventos
-          │                    └─ relatórios temporários
-          ▼
-Frontend futuro (REST/JSON)
+```
+KY-032 (GPIO17) ─┐
+LED (GPIO27)     ├─ Raspberry: leitor na GPIO + fila SQLite + tela local :5050
+Buzzer (GPIO22) ─┘                         │ botão Enviar
+                                           │ POST /api/estoque/inventario/leituras/lote
+                                           ▼
+                                FastAPI REST :5000
+                                           │
+                                SQLite base de dados
+                                           │ cache 30s / versão
+                                           ▼
+                                         Redis
 ```
 
-A versão 1 escolhia aleatoriamente um produto porque o sensor apenas detectava a passagem de um objeto. Esse comportamento é mantido quando a leitura não informa `product_id` nem `barcode`. Se a montagem futura tiver um leitor de código de barras, a mesma API aceita a identificação explícita do produto.
+O GPIO usa numeração BCM: sensor em `17` (pino físico 11), LED em `27` (pino físico 13) e buzzer em `22` (pino físico 15).   
+Os 3 componentes trabalham juntos para simular um leitor de código de barras.
 
-## Requisitos
+## Comportamento do leitor
 
-- Python 3.12+
-- UV ou pip
-- Redis 7+
-- Raspberry Pi com os sensores da versão 1
+- O sensor está limitado a uma detecção por segundo no máximo para evitar spam ou leituras aceidentais, mas ainda preservar agilidade.
 
-## Executar localmente
+- Cada detecção sorteia um produto do catálogo local e grava uma linha em `ESTOQUE_READER_QUEUE_DATABASE_PATH`.
 
-1. Instale as dependências:
+- Falha de GPIO, API desligada ou erro HTTP não apaga a fila nem interrompe o monitoramento.
+
+- A tela local em `http://IP_DA_RASPBERRY:5050` mostra somente a lista de produtos do lote atual e possui o botão **Enviar**; ela não consulta o cache gerencial.
+
+- Ao clicar em **Enviar**, todo o lote pendente é enviado para `POST /api/estoque/inventario/leituras/lote`. Se o envio falhar, as leituras permanecem na fila.
+
+- O leitor não faz tentativas automáticas de envio: nenhuma leitura é encaminhada enquanto o operador não clicar em **Enviar**.
+
+## Painel gerencial
+
+O painel gerencial fica em `http://IP_DO_SERVIDOR:5000/manager`. Ao abrir a tela e ao clicar em **Atualizar**, ela chama `GET /api/estoque/inventario`. Esse endpoint tenta primeiro o Redis; se a entrada passou dos 30 segundos de TTL, não existe ou tem uma versão diferente da versão do SQLite, lê o SQLite e reconstrói o cache.
+
+Depois que um lote é enviado pelo leitor, o backend grava os produtos no SQLite, incrementa a versão do inventário, invalida a entrada antiga e reconstrói o cache. Assim, a próxima abertura ou atualização do painel gerencial já encontra os dados do lote mais recente.
+
+## Backend: SQLite e Redis
+
+O SQLite (`ESTOQUE_DATABASE_PATH`) é a base de dados. Ele contém catálogo, inventário atual, versões e relatórios. O Redis não é banco principal: cada valor em cache guarda a versão do SQLite e possui TTL de 30 segundos. Se a versão do SQLite mudar, o cache é considerado divergente e é reconstruído imediatamente, mesmo antes do TTL.
+
+O Redis está hospedado no Redis Cloud. Defina a URL no arquivo `.env`:
+
+```
+ESTOQUE_REDIS_URL=redis://default:SENHA@HOST:12493
+```
+
+## Executar a API
 
 ```bash
 uv sync
-```
 
-2. Inicie o Redis:
-
-```bash
-docker compose up -d redis
-```
-
-3. Copie as configurações:
-
-```bash
 cp .env.example .env
-```
-
-4. Inicie a API:
-
-```bash
+# edite ESTOQUE_REDIS_URL, se necessário
 uv run task run
 ```
 
-A documentação interativa fica em `http://localhost:8000/docs`.
+A API fica em `http://localhost:5000` e a documentação em `/docs`.
 
-## Endpoints
+### Endpoints
 
-- `GET /api/v1/health` — saúde da API e conexão Redis.
-- `GET /api/v1/products` — catálogo de produtos.
-- `GET /api/v1/inventory` — levantamento atual.
-- `POST /api/v1/inventory/readings` — registra uma detecção do sensor.
-- `POST /api/v1/inventory/submit` — fecha o levantamento, armazena um relatório no Redis e limpa o inventário atual.
-- `GET /api/v1/inventory/reports/{report_id}` — consulta um relatório fechado enquanto ele estiver no TTL configurado.
+- `GET /api/estoque/health` — saúde do banco e do Redis.
 
-Exemplo de leitura do sensor sem identificação de produto:
+- `GET /api/estoque/produtos` — catálogo com cache Redis validado pela versão SQLite.
+
+- `GET /api/estoque/inventario` — inventário atual; a resposta informa `source: database` ou `source: cache`.
+
+- `POST /api/estoque/inventario/leituras` — leitura unitária.
+
+- `POST /api/estoque/inventario/leituras/lote` — lote enviado pelo leitor GPIO.
+
+- `POST /api/estoque/inventario/finalizar` — fecha o inventário e limpa a contagem atual.
+
+- `GET /api/estoque/inventario/relatorios/{report_id}` — consulta relatório salvo no SQLite.
+
+Exemplo de lote:
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/inventory/readings \
+curl -X POST http://localhost:5000/api/estoque/inventario/leituras/lote \
   -H 'Content-Type: application/json' \
-  -d '{"detected": true, "device_id": "raspberry-pi-01"}'
+  -d '{"readings":[{"product_id":1,"device_id":"raspberry-pi-gpio"},{"product_id":2,"device_id":"raspberry-pi-gpio"}]}'
 ```
 
-Exemplo com produto identificado:
+## Executar no Raspberry Pi
+
+Instale o backend GPIO do sistema e permita que o ambiente veja os pacotes do Raspberry Pi OS:
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/inventory/readings \
-  -H 'Content-Type: application/json' \
-  -d '{"barcode": "7891000100011", "device_id": "raspberry-pi-01"}'
-```
+sudo apt update
+sudo apt install -y python3-lgpio
 
-## Leitor GPIO na Raspberry Pi
-
-O leitor GPIO implementa o comportamento do sketch `leitor-codigo-barras.ino`. Os números abaixo usam a numeração BCM da Raspberry Pi (não os números dos pinos do Arduino):
-
-| Sinal | Pino no sketch Arduino | GPIO Raspberry (BCM) | Pino físico |
-|---|---:|---:|---:|
-| Saída do sensor | 2 | 17 | 11 |
-| LED | 8 | 27 | 13 |
-| Buzzer | 9 | 22 | 15 |
-
-O leitor usa `DigitalInputDevice(17, pull_up=True)` e consulta `sensor.value` a cada 0,2 s. Quando o valor e `0`, registra "OBSTACULO DETECTADO!" e envia uma leitura a API; se a API estiver indisponivel ou recusar a leitura, tenta novamente a cada 2 segundos ate obter sucesso. O envio HTTP e o efeito do LED/buzzer rodam em tarefas isoladas, entao uma falha inesperada nelas e registrada sem encerrar a leitura do sensor. Enquanto o sensor continuar detectando o mesmo obstaculo, nao inicia um novo envio independente. Quando volta a `1`, registra "CAMINHO LIVRE". O LED e o buzzer PWM reproduzem o efeito do sketch.
-
-Use um resistor adequado em série com o LED. Os pinos GPIO da Raspberry Pi são de 3,3 V: não aplique 5 V ao sensor ou às entradas GPIO; verifique o nível lógico da saída do sensor e use adaptação de nível quando necessário. Não conecte um buzzer que exceda a corrente permitida por um GPIO diretamente.
-
-Execute na Raspberry Pi:
-
-```bash
-sudo apt install python3-lgpio
 uv venv --system-site-packages
 uv sync
-uv run task cli-gpio
 ```
 
-O leitor seleciona explicitamente o backend `lgpio`, evitando o backend `native` baseado em `/sys/class/gpio`. Se ja existir um ambiente `.venv` sem acesso aos pacotes do sistema, recrie-o com `uv venv --clear --system-site-packages` antes de executar `uv sync`. Verifique tambem se o usuario tem permissao de leitura e escrita em `/dev/gpiochip*`.
+Configure a API acessível pela Raspberry:
 
-Configure `ESTOQUE_API_URL` no `.env` com o endereco acessivel da API. `localhost` so funciona quando a API roda na propria Raspberry Pi; se ela estiver em outro computador, use o IP desse computador, por exemplo `http://192.168.1.10:8000`. A dependencia `gpiozero` e instalada junto com as demais. O log do leitor mostra o estado do sensor e confirma cada deteccao e envio.
-
-## Cliente serial de compatibilidade
-
-```env
-ESTOQUE_API_URL=http://IP_DO_SERVIDOR:8000
-ESTOQUE_SERIAL_PORT=/dev/ttyUSB0
-ESTOQUE_SERIAL_BAUDRATE=9600
 ```
+ESTOQUE_API_URL=http://IP_DO_SERVIDOR:5000
+ESTOQUE_READER_PORT=5050
+ESTOQUE_READER_QUEUE_DATABASE_PATH=estoque/dados/leitor-pendente.sqlite3
+```
+
+Inicie o leitor:
 
 ```bash
 uv run task cli
 ```
 
-## Desenvolvimento
+Abra `http://IP_DA_RASPBERRY:5050`.
+
+## Testes
 
 ```bash
-uv run task lint
-uv run pytest
+uv run task test
 ```
-
-O estado operacional fica no Redis; o arquivo `estoque/dados/produtos.json` é a fonte inicial do catálogo e é carregado no cache na inicialização da API.

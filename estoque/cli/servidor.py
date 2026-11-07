@@ -2,9 +2,9 @@ import uvicorn
 
 from estoque.config import Settings
 
+settings = Settings()
 
 def main() -> None:
-    settings = Settings()
     uvicorn.run(
         "estoque.api.app:app",
         host=settings.server_host,

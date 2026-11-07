@@ -1,6 +1,7 @@
 import asyncio
 
 from estoque.cli import leitor_gpio
+from estoque.config import Settings
 
 
 class FakeGPIO:
@@ -41,35 +42,11 @@ class FakeBuzzer:
         self.events.append(("off",))
 
 
-def test_gpio_pins_match_documented_bcm_assignment() -> None:
-    assert leitor_gpio.SENSOR_PIN_BCM == 17
-    assert leitor_gpio.LED_PIN_BCM == 27
-    assert leitor_gpio.BUZZER_PIN_BCM == 22
-
-
-def test_sensor_value_zero_means_obstacle() -> None:
-    assert leitor_gpio.obstacle_detected(0)
-    assert not leitor_gpio.obstacle_detected(1)
-
-
-def test_reading_retries_until_api_accepts(monkeypatch) -> None:
-    outcomes = iter([False, False, True])
-    attempts = 0
-    delays: list[float] = []
-
-    async def send_reading() -> bool:
-        nonlocal attempts
-        attempts += 1
-        return next(outcomes)
-
-    async def fake_sleep(duration: float) -> None:
-        delays.append(duration)
-
-    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
-    asyncio.run(leitor_gpio.retry_reading(send_reading, retry_interval=2.0))
-
-    assert attempts == 3
-    assert delays == [2.0, 2.0]
+def test_gpio_pins_are_loaded_from_settings() -> None:
+    settings = Settings()
+    assert settings.sensor_pin_bcm == 17
+    assert settings.led_pin_bcm == 27
+    assert settings.buzzer_pin_bcm == 22
 
 
 def test_background_task_failure_does_not_stop_sensor_loop(caplog) -> None:
@@ -104,7 +81,7 @@ def test_scanner_effect_matches_sketch_timing_and_tones(monkeypatch) -> None:
         events.append(("sleep", duration))
 
     monkeypatch.setattr(asyncio, "sleep", fake_sleep)
-    asyncio.run(leitor_gpio.efeito_scanner(led, FakeBuzzer(events)))
+    asyncio.run(leitor_gpio.resposta_produto_detectado(led, FakeBuzzer(events)))
 
     assert events == [
         ("on",),

@@ -1,29 +1,26 @@
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, Field
 
 from estoque.domain.produto.enitity import Produto, ProdutoLevantamento
 
 
 class ReadingRequest(BaseModel):
-    """Evento enviado pelo Raspberry quando o sensor detecta um item."""
-
     detected: bool = True
     product_id: int | None = Field(default=None, gt=0)
-    barcode: str | None = Field(default=None, min_length=1)
     device_id: str | None = Field(default=None, min_length=1, max_length=100)
 
-    @model_validator(mode="after")
-    def validate_product_reference(self) -> "ReadingRequest":
-        if self.product_id is not None and self.barcode is not None:
-            raise ValueError("informe product_id ou barcode, não os dois")
-        return self
+class BatchReadingRequest(BaseModel):
+    readings: list[ReadingRequest] = Field(min_length=1, max_length=5000)
 
 
 class InventoryResponse(BaseModel):
     items: list[ProdutoLevantamento]
     total_items: int
     updated_at: datetime | None = None
+    source: Literal["cache", "database"] = "database"
+    cache_version: str | None = None
 
 
 class ReadingResponse(BaseModel):
@@ -32,9 +29,12 @@ class ReadingResponse(BaseModel):
     inventory: InventoryResponse
 
 
-class ReportResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class BatchReadingResponse(BaseModel):
+    accepted: int
+    inventory: InventoryResponse
 
+
+class ReportResponse(BaseModel):
     report_id: str
     created_at: datetime
     items: list[ProdutoLevantamento]
@@ -44,3 +44,4 @@ class ReportResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     redis: str
+    database: str

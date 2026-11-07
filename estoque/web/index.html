@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leitor GPIO — Lote atual</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="panel">
+    <header>
+      <div>
+        <p class="eyebrow">RASPBERRY PI · KY-032</p>
+        <h1>Leitor de estoque</h1>
+        <p class="subtitle">O produto é sorteado após uma detecção real do KY-032.</p>
+      </div>
+      <button id="send" class="send">Enviar</button>
+    </header>
+
+    <section class="list-card">
+      <div class="section-title"><h2>Produtos lidos neste lote</h2><span id="message">Monitorando GPIO17</span></div>
+      <p id="pending" class="count">0 produtos pendentes</p>
+      <ul id="product-list" class="product-list"></ul>
+      <p id="empty" class="empty">Nenhuma leitura real registrada neste lote.</p>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

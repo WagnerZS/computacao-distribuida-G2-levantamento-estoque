@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestão de estoque</title>
+  <link rel="stylesheet" href="/manager-static/styles.css">
+</head>
+<body>
+  <main class="panel">
+    <header>
+      <div>
+        <p class="eyebrow">PAINEL GERENCIAL</p>
+        <h1>Estoque lido</h1>
+        <p class="subtitle">Os dados são consultados pela API e podem vir do cache Redis.</p>
+      </div>
+      <button id="refresh" class="refresh">Atualizar</button>
+    </header>
+    <section class="meta">
+      <span id="source">Aguardando consulta</span>
+      <span id="version"></span>
+    </section>
+    <section class="chart-card">
+      <div class="section-title"><h2>Quantidade por produto</h2><span id="message">Abrindo painel…</span></div>
+      <div id="chart" class="chart" aria-label="Gráfico de barras de produtos"></div>
+      <p id="empty" class="empty">Nenhum produto enviado neste inventário.</p>
+    </section>
+  </main>
+  <script src="/manager-static/app.js"></script>
+</body>
+</html>

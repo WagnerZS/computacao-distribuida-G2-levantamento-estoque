@@ -1,7 +1,7 @@
 [project]
 name = "levantamento_estoque"
 version = "0.1.0"
-description = "Software de levantamento de estoque com leitor de codigo de barras fisico"
+description = "Leitor GPIO e API REST para levantamento de estoque"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -9,9 +9,7 @@ dependencies = [
     "redis>=5.2",
     "uvicorn[standard]>=0.34",
     "httpx>=0.28",
-    "pyserial>=3.5",
     "pydantic-settings>=2.2",
-    "pyserial-asyncio>=0.6",
     "gpiozero>=2.0.1",
 ]
 
@@ -41,8 +39,7 @@ ignore = []
 
 [tool.taskipy.tasks]
 run = "python -m estoque.cli.servidor"
-cli = "python -m estoque.cli.leitor"
-cli-gpio = "python -m estoque.cli.leitor_gpio"
+cli = "python -m estoque.cli.leitor_gpio"
 lint = "ruff check ."
 format = "ruff format ."
 test = "pytest"
@@ -54,8 +51,6 @@ exclude = ["**/__pycache__", ".venv", ".ruff_cache"]
 allowedUntypedLibraries = ["serial_asyncio", "gpiozero"]
 typeCheckingMode = "strict"
 pythonVersion = "3.12"
-# O Tornado expoe uma sobrecarga parcialmente tipada para RequestHandler.finish.
-# Nao exigir cast apenas para esse tipo externo desconhecido.
 reportUnknownMemberType = "none"
 
 [tool.coverage.run]
