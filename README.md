@@ -71,21 +71,7 @@ A API fica em `http://localhost:5000` e a documentação em `/docs`.
 
 - `GET /api/estoque/inventario` — inventário atual; a resposta informa `source: database` ou `source: cache`.
 
-- `POST /api/estoque/inventario/leituras` — leitura unitária.
-
 - `POST /api/estoque/inventario/leituras/lote` — lote enviado pelo leitor GPIO.
-
-- `POST /api/estoque/inventario/finalizar` — fecha o inventário e limpa a contagem atual.
-
-- `GET /api/estoque/inventario/relatorios/{report_id}` — consulta relatório salvo no SQLite.
-
-Exemplo de lote:
-
-```bash
-curl -X POST http://localhost:5000/api/estoque/inventario/leituras/lote \
-  -H 'Content-Type: application/json' \
-  -d '{"readings":[{"product_id":1,"device_id":"raspberry-pi-gpio"},{"product_id":2,"device_id":"raspberry-pi-gpio"}]}'
-```
 
 ## Executar no Raspberry Pi
 

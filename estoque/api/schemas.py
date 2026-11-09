@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from estoque.domain.produto.enitity import Produto, ProdutoLevantamento
+from estoque.domain.produto.enitity import ProdutoLevantamento
 
 
 class ReadingRequest(BaseModel):
@@ -21,13 +21,7 @@ class InventoryResponse(BaseModel):
     updated_at: datetime | None = None
     source: Literal["cache", "database"] = "database"
     cache_version: str | None = None
-
-
-class ReadingResponse(BaseModel):
-    accepted: bool
-    product: Produto | None = None
-    inventory: InventoryResponse
-
+    
 
 class BatchReadingResponse(BaseModel):
     accepted: int

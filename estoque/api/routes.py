@@ -5,8 +5,6 @@ from estoque.api.schemas import (
     BatchReadingResponse,
     HealthResponse,
     InventoryResponse,
-    ReadingRequest,
-    ReadingResponse,
 )
 from estoque.domain.levantamento.api_service import InventoryService
 
@@ -34,26 +32,6 @@ async def list_products(request: Request):
 @router.get("/inventario", response_model=InventoryResponse)
 async def current_inventory(request: Request) -> InventoryResponse:
     return await service(request).current()
-
-
-@router.post(
-    "/inventario/leituras",
-    response_model=ReadingResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def register_reading(payload: ReadingRequest, request: Request) -> ReadingResponse:
-    current_service = service(request)
-    if not payload.detected:
-        return ReadingResponse(accepted=False, inventory=await current_service.current())
-    try:
-        product = current_service.find_product(payload.product_id)
-    except (KeyError, RuntimeError) as error:
-        raise HTTPException(status_code=404, detail=str(error)) from error
-    return ReadingResponse(
-        accepted=True,
-        product=product,
-        inventory=await current_service.register_product_ids([product.id]),
-    )
 
 
 @router.post(
