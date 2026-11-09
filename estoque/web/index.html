@@ -6,34 +6,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Estoque+ | Leitor</title>
+    <title>EstoqueFlow | Leitor</title>
 
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
 
-    <!-- CABEÇALHO -->
-    <header class="topbar">
+    <div class="reader-app-layout">
 
-        <div class="brand">
-            <div class="brand-icon">E</div>
+    <aside class="reader-sidebar">
+
+        <div class="reader-logo-area">
+            <div class="reader-logo-icon">E</div>
 
             <div>
-                <h1>ESTOQUE<span>+</span></h1>
-                <p>GERENCIAMENTO DE ESTOQUE</p>
+                <h2>Estoque<span>Flow</span></h2>
+                <small>LEITOR</small>
             </div>
         </div>
 
-        <div class="status">
-            <span class="status-dot"></span>
-            LEITOR DE ESTOQUE
-        </div>
+        <div class="reader-menu-label">MENU PRINCIPAL</div>
 
-    </header>
+        <nav class="reader-navigation" aria-label="Navegação principal">
+            <a href="/" class="reader-nav-item active" aria-current="page">
+                <span class="reader-nav-icon">▦</span>
+                Leitor de estoque
+            </a>
 
+            <a href="#" class="reader-nav-item" id="gestor-link">
+                <span class="reader-nav-icon">▥</span>
+                Painel gerencial
+            </a>
+        </nav>
+    </aside>
 
-    <main class="container">
+        <main class="reader-main-content">
+
+            <div class="container">
 
         <!-- TÍTULO -->
         <section class="heading">
@@ -154,13 +164,16 @@
 
         </section>
 
-    </main>
+            </div>
 
+            <!-- RODAPÉ -->
+            <footer>
+                EstoqueFlow · Sistema de Gerenciamento de Estoque
+            </footer>
 
-    <!-- RODAPÉ -->
-    <footer>
-        ESTOQUE+ · Sistema de Gerenciamento de Estoque
-    </footer>
+        </main>
+
+    </div>
 
 
     <!-- JAVASCRIPT ORIGINAL -->

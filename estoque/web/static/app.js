@@ -23,7 +23,7 @@ async function refresh() {
     if (!response.ok) throw new Error('status');
     const data = await response.json();
     render(data);
-    message.textContent = 'Monitorando GPIO17 · limite de 1 leitura/s';
+    message.textContent = 'Monitorando GPIO17';
   } catch (_) {
     message.textContent = 'Não foi possível consultar a fila local';
   }
@@ -47,3 +47,11 @@ sendButton.addEventListener('click', async () => {
 
 refresh();
 setInterval(refresh, 1000);
+
+document.addEventListener("DOMContentLoaded", () => {
+    const gestorLink = document.getElementById("gestor-link");
+
+    if (gestorLink ) {
+        gestorLink .href = `${window.location.protocol}//${window.location.hostname}:5000/manager`;
+    }
+});
