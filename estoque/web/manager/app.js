@@ -49,3 +49,11 @@ async function refresh() {
 
 refreshButton.addEventListener('click', refresh);
 refresh();
+
+document.addEventListener("DOMContentLoaded", () => {
+    const leitorLink = document.getElementById("leitor-link");
+
+    if (leitorLink) {
+        leitorLink.href = `${window.location.protocol}//${window.location.hostname}:5050/`;
+    }
+});

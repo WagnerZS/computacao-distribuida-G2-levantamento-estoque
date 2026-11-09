@@ -1,31 +1,183 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gestão de estoque</title>
-  <link rel="stylesheet" href="/manager-static/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Painel Gerencial | EstoqueFlow</title>
+
+    <link rel="stylesheet" href="/manager-static/styles.css">
 </head>
+
 <body>
-  <main class="panel">
-    <header>
-      <div>
-        <p class="eyebrow">PAINEL GERENCIAL</p>
-        <h1>Estoque lido</h1>
-        <p class="subtitle">Os dados são consultados pela API e podem vir do cache Redis.</p>
-      </div>
-      <button id="refresh" class="refresh">Atualizar</button>
-    </header>
-    <section class="meta">
-      <span id="source">Aguardando consulta</span>
-      <span id="version"></span>
-    </section>
-    <section class="chart-card">
-      <div class="section-title"><h2>Quantidade por produto</h2><span id="message">Abrindo painel…</span></div>
-      <div id="chart" class="chart" aria-label="Gráfico de barras de produtos"></div>
-      <p id="empty" class="empty">Nenhum produto enviado neste inventário.</p>
-    </section>
-  </main>
-  <script src="/manager-static/app.js"></script>
+
+<div class="app-layout">
+
+    <aside class="sidebar">
+
+        <div class="logo-area">
+            <div class="logo-icon">E</div>
+
+            <div>
+                <h2>Estoque<span>Flow</span></h2>
+                <small>GERENCIAMENTO</small>
+            </div>
+        </div>
+
+        <div class="menu-label">MENU PRINCIPAL</div>
+
+        <nav class="navigation">
+
+            <!-- LINK PARA O LEITOR -->
+            <a href="#" class="nav-item" id="leitor-link">
+                <span class="nav-icon">▦</span>
+                Leitor de estoque
+            </a>
+
+            <!-- PAINEL GERENCIAL -->
+            <a href="/manager" class="nav-item active">
+                <span class="nav-icon">▥</span>
+                Painel gerencial
+            </a>
+
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <span class="breadcrumb">
+                    Estoque / <strong>Painel gerencial</strong>
+                </span>
+
+                <h1>Painel gerencial</h1>
+
+                <p>
+                    Acompanhe os produtos escaneados e os dados do inventário.
+                </p>
+            </div>
+
+            <div class="topbar-user">
+                <div class="user-avatar">AD</div>
+
+                <div>
+                    <strong>Administrador</strong>
+                    <small>Visão geral</small>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="welcome-card">
+
+            <div>
+                <span class="welcome-tag">VISÃO GERAL DO ESTOQUE</span>
+
+                <h2>Controle e acompanhamento de produtos</h2>
+
+                <p>
+                    Consulte os produtos registrados e acompanhe
+                    a quantidade de leituras realizadas pelo sistema.
+                </p>
+            </div>
+
+            <div class="welcome-illustration">▥</div>
+
+        </section>
+
+        <section class="information-grid">
+
+            <article class="info-card">
+
+                <div class="info-icon green">▤</div>
+
+                <div>
+                    <span>Origem dos dados</span>
+                    <strong id="source">Aguardando consulta</strong>
+                </div>
+
+            </article>
+
+            <article class="info-card">
+
+                <div class="info-icon blue">◷</div>
+
+                <div>
+                    <span>Versão do inventário</span>
+                    <strong id="version">0</strong>
+                </div>
+
+            </article>
+
+        </section>
+
+        <section class="chart-section">
+
+            <div class="chart-header">
+
+                <div>
+                    <span class="section-label">ANÁLISE DO INVENTÁRIO</span>
+
+                    <h2>Quantidade por produto</h2>
+
+                    <p>
+                        Visualização da quantidade total de produtos escaneados.
+                    </p>
+                </div>
+
+                <button id="refresh" class="refresh-button" type="button">
+                    <span>↻</span>
+                    Atualizar dados
+                </button>
+
+            </div>
+
+            <div class="chart-information">
+
+                <div class="legend">
+                    <span class="legend-dot"></span>
+                    Produtos escaneados
+                </div>
+
+                <span id="message">
+                    Aguardando atualização
+                </span>
+
+            </div>
+
+            <div class="chart-container">
+
+                <div id="chart" class="chart"
+                     aria-label="Gráfico de barras com quantidade por produto">
+                </div>
+
+                <p id="empty" class="empty-state">
+                    <span class="empty-icon">▥</span>
+
+                    <strong>Nenhum produto registrado</strong>
+
+                    <small>
+                        Quando os produtos forem enviados pelo leitor,
+                        os dados aparecerão neste gráfico.
+                    </small>
+                </p>
+
+            </div>
+        </section>
+
+        <footer class="page-footer">
+            EstoqueFlow · Sistema de gerenciamento de estoque
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="/manager-static/app.js"></script>
+
 </body>
 </html>

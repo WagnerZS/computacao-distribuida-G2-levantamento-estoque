@@ -19,7 +19,7 @@ function render(data) {
 
 async function refresh() {
   try {
-    const response = await fetch('/api/reader/status');
+    const response = await fetch('/api/leitor/status');
     if (!response.ok) throw new Error('status');
     const data = await response.json();
     render(data);
@@ -33,7 +33,7 @@ sendButton.addEventListener('click', async () => {
   sendButton.disabled = true;
   message.textContent = 'Enviando lote para a API…';
   try {
-    const response = await fetch('/api/reader/send', { method: 'POST' });
+    const response = await fetch('/api/leitor/enviar', { method: 'POST' });
     const data = await response.json();
     if (!response.ok) throw new Error(data.detail || 'Falha no envio');
     render(data.status);

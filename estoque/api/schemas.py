@@ -34,13 +34,6 @@ class BatchReadingResponse(BaseModel):
     inventory: InventoryResponse
 
 
-class ReportResponse(BaseModel):
-    report_id: str
-    created_at: datetime
-    items: list[ProdutoLevantamento]
-    total_items: int
-
-
 class HealthResponse(BaseModel):
     status: str
     redis: str

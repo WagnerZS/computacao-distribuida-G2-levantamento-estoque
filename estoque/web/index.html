@@ -1,29 +1,171 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Leitor GPIO — Lote atual</title>
-  <link rel="stylesheet" href="/static/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Estoque+ | Leitor</title>
+
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
+
 <body>
-  <main class="panel">
-    <header>
-      <div>
-        <p class="eyebrow">RASPBERRY PI · KY-032</p>
-        <h1>Leitor de estoque</h1>
-        <p class="subtitle">O produto é sorteado após uma detecção real do KY-032.</p>
-      </div>
-      <button id="send" class="send">Enviar</button>
+
+    <!-- CABEÇALHO -->
+    <header class="topbar">
+
+        <div class="brand">
+            <div class="brand-icon">E</div>
+
+            <div>
+                <h1>ESTOQUE<span>+</span></h1>
+                <p>GERENCIAMENTO DE ESTOQUE</p>
+            </div>
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            LEITOR DE ESTOQUE
+        </div>
+
     </header>
 
-    <section class="list-card">
-      <div class="section-title"><h2>Produtos lidos neste lote</h2><span id="message">Monitorando GPIO17</span></div>
-      <p id="pending" class="count">0 produtos pendentes</p>
-      <ul id="product-list" class="product-list"></ul>
-      <p id="empty" class="empty">Nenhuma leitura real registrada neste lote.</p>
-    </section>
-  </main>
-  <script src="/static/app.js"></script>
+
+    <main class="container">
+
+        <!-- TÍTULO -->
+        <section class="heading">
+
+            <span class="eyebrow">SISTEMA DE LEITURA</span>
+
+            <h2>Leitor de estoque</h2>
+
+            <p>
+                Acompanhe os produtos identificados pelo sensor
+                e envie os registros para o inventário.
+            </p>
+
+        </section>
+
+
+        <!-- BANNER DO SENSOR -->
+        <section class="reader-banner">
+
+            <div>
+                <span class="banner-label">
+                    RASPBERRY PI · KY-032
+                </span>
+
+                <h3>Leitura de produtos</h3>
+
+                <p>
+                    Os produtos detectados são adicionados
+                    automaticamente ao lote atual.
+                </p>
+            </div>
+
+            <div class="sensor-icon">⌁</div>
+
+        </section>
+
+
+        <!-- RESUMO -->
+        <section class="summary-card">
+
+            <div class="summary-info">
+
+                <span>PRODUTOS PENDENTES</span>
+
+                <strong id="pending">
+                    0 produtos pendentes
+                </strong>
+
+                <p>
+                    Aguardando envio para o inventário.
+                </p>
+
+            </div>
+
+            <div class="summary-icon">▤</div>
+
+        </section>
+
+
+        <!-- PRODUTOS LIDOS -->
+        <section class="products-card">
+
+            <div class="section-heading">
+
+                <div>
+                    <span class="eyebrow">LOTE ATUAL</span>
+
+                    <h3>Produtos lidos</h3>
+
+                    <p>
+                        Lista de produtos identificados pelo leitor.
+                    </p>
+                </div>
+
+                <span class="lot-badge">LOTE ATIVO</span>
+
+            </div>
+
+
+            <!-- MENSAGEM DO SISTEMA -->
+            <div class="message-area">
+
+                <span class="status-dot"></span>
+
+                <span id="message">
+                    Monitorando GPIO17
+                </span>
+
+            </div>
+
+
+            <!-- LISTA DINÂMICA -->
+            <ul id="product-list" class="product-list"></ul>
+
+
+            <!-- ESTADO VAZIO -->
+            <p id="empty" class="empty">
+                Nenhuma leitura real registrada neste lote.
+            </p>
+
+
+            <!-- ENVIO -->
+            <div class="send-area">
+
+                <div>
+                    <strong>Finalizar lote</strong>
+
+                    <p>
+                        Envie os produtos pendentes para o inventário.
+                    </p>
+                </div>
+
+                <button id="send" class="send-button">
+                    Enviar lote →
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- RODAPÉ -->
+    <footer>
+        ESTOQUE+ · Sistema de Gerenciamento de Estoque
+    </footer>
+
+
+    <!-- JAVASCRIPT ORIGINAL -->
+    <script src="/static/app.js"></script>
+
 </body>
+
 </html>

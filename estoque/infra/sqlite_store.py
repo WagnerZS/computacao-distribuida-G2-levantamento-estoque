@@ -1,9 +1,7 @@
 import hashlib
 import json
 import sqlite3
-from datetime import UTC, datetime
 from pathlib import Path
-from uuid import uuid4
 
 from estoque.domain.produto.enitity import Produto, ProdutoLevantamento
 
@@ -35,11 +33,6 @@ class SQLiteStore:
                 CREATE TABLE IF NOT EXISTS inventory (
                     product_id INTEGER PRIMARY KEY REFERENCES products(id),
                     quantidade INTEGER NOT NULL CHECK (quantidade >= 0)
-                );
-                CREATE TABLE IF NOT EXISTS reports (
-                    report_id TEXT PRIMARY KEY,
-                    created_at TEXT NOT NULL,
-                    payload TEXT NOT NULL
                 );
                 CREATE TABLE IF NOT EXISTS metadata (
                     key TEXT PRIMARY KEY,
@@ -123,33 +116,3 @@ class SQLiteStore:
             )
             for row in rows
         ]
-
-    def save_report(self, items: list[ProdutoLevantamento]) -> tuple[str, datetime]:
-        report_id = str(uuid4())
-        created_at = datetime.now(UTC)
-        payload = json.dumps(
-            {
-                "items": [item.model_dump() for item in items],
-                "total_items": sum(i.quantidade for i in items),
-            },
-            ensure_ascii=False,
-        )
-        with self._connect() as connection:
-            connection.execute(
-                "INSERT INTO reports (report_id, created_at, payload) VALUES (?, ?, ?)",
-                (report_id, created_at.isoformat(), payload),
-            )
-            connection.execute("DELETE FROM inventory")
-            self._bump_inventory_version(connection)
-        return report_id, created_at
-
-    def get_report(self, report_id: str) -> dict[str, object] | None:
-        with self._connect() as connection:
-            row = connection.execute(
-                "SELECT report_id, created_at, payload FROM reports WHERE report_id = ?",
-                (report_id,),
-            ).fetchone()
-        if row is None:
-            return None
-        payload = json.loads(row["payload"])
-        return {"report_id": row["report_id"], "created_at": row["created_at"], **payload}

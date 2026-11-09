@@ -7,7 +7,6 @@ from estoque.api.schemas import (
     InventoryResponse,
     ReadingRequest,
     ReadingResponse,
-    ReportResponse,
 )
 from estoque.domain.levantamento.api_service import InventoryService
 
@@ -76,16 +75,3 @@ async def register_batch(payload: BatchReadingRequest, request: Request) -> Batc
         accepted=len(product_ids),
         inventory=await current_service.register_product_ids(product_ids),
     )
-
-
-@router.post("/inventario/finalizar", response_model=ReportResponse)
-async def submit_inventory(request: Request) -> ReportResponse:
-    return await service(request).submit()
-
-
-@router.get("/inventario/relatorios/{report_id}", response_model=ReportResponse)
-async def get_report(report_id: str, request: Request) -> ReportResponse:
-    report = service(request).get_report(report_id)
-    if report is None:
-        raise HTTPException(status_code=404, detail="relatório não encontrado")
-    return report

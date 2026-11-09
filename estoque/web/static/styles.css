@@ -1,20 +1,618 @@
-* { box-sizing: border-box; }
-:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #14211d; background: #e9eee9; }
-body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 28px; }
-.panel { width: min(980px, 100%); background: #f8faf6; border: 1px solid #d6dfd5; border-radius: 24px; padding: 34px; box-shadow: 0 24px 60px #193b2a18; }
-header { display: flex; justify-content: space-between; align-items: start; gap: 24px; }
-.eyebrow { margin: 0 0 10px; color: #31805d; font-size: 12px; font-weight: 800; letter-spacing: .15em; }
-h1 { margin: 0; font-size: clamp(30px, 5vw, 52px); letter-spacing: -.05em; }
-.subtitle { color: #66756c; margin: 12px 0 0; }
-.send { border: 0; border-radius: 12px; background: #206b4a; color: white; padding: 13px 25px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 18px #206b4a32; }
-.send:disabled { opacity: .55; cursor: wait; }
-.list-card { margin-top: 32px; background: white; border: 1px solid #e0e8df; border-radius: 18px; padding: 20px; }
-.section-title { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
-h2 { margin: 0; font-size: 18px; }
-#message { color: #76867c; font-size: 13px; }
-.count { color: #5f7065; margin: 18px 0 10px; }
-.product-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-.product-list li { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: #edf3ec; border-radius: 10px; }
-.product-list strong { color: #206b4a; font-size: 18px; }
-.empty { text-align: center; color: #8b968e; padding: 28px; margin: 0; }
-@media (max-width: 680px) { body { padding: 12px; } .panel { padding: 22px; } header { flex-direction: column; } .send { width: 100%; } .section-title { align-items: flex-start; flex-direction: column; } }
+
+/* ==============================
+   CONFIGURAÇÕES GERAIS
+============================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #101713;
+    --surface: #18221c;
+    --surface-light: #202d25;
+    --border: #2d3b32;
+    --green: #35c878;
+    --green-dark: #20965a;
+    --text: #f2f7f3;
+    --muted: #91a198;
+    --orange: #e8a44b;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* ==============================
+   CABEÇALHO
+============================== */
+
+.topbar {
+    height: 82px;
+    padding: 0 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #151e18;
+    border-bottom: 1px solid var(--border);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.brand-icon {
+    width: 43px;
+    height: 43px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--green);
+    color: #102017;
+    font-size: 24px;
+    font-weight: 800;
+    border-radius: 11px;
+}
+
+.brand h1 {
+    font-size: 21px;
+    letter-spacing: 1px;
+}
+
+.brand h1 span {
+    color: var(--green);
+}
+
+.brand p {
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    margin-top: 4px;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #c8d7ce;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    display: inline-block;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 10px #35c87855;
+}
+
+/* ==============================
+   CONTEÚDO
+============================== */
+
+.container {
+    width: 86%;
+    max-width: 1150px;
+    margin: 45px auto;
+}
+
+.heading {
+    margin-bottom: 27px;
+}
+
+.eyebrow {
+    color: var(--green);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.7px;
+}
+
+.heading h2 {
+    font-size: 30px;
+    margin: 10px 0;
+}
+
+.heading p,
+.reader-banner p,
+.summary-info p,
+.section-heading p,
+.send-area p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* ==============================
+   BANNER
+============================== */
+
+.reader-banner {
+    min-height: 175px;
+    padding: 30px 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(120deg, #1d3527, #19271f);
+    border: 1px solid #31533d;
+    border-radius: 15px;
+    margin-bottom: 22px;
+}
+
+.banner-label {
+    color: var(--green);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.reader-banner h3 {
+    font-size: 23px;
+    margin: 12px 0 7px;
+}
+
+.reader-banner p {
+    max-width: 480px;
+}
+
+.sensor-icon {
+    width: 85px;
+    height: 85px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    background: #35c87820;
+    color: var(--green);
+    font-size: 54px;
+}
+
+/* ==============================
+   RESUMO
+============================== */
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    margin-bottom: 22px;
+}
+
+.summary-info > span {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+
+.summary-info strong {
+    display: block;
+    font-size: 25px;
+    margin: 8px 0;
+}
+
+.summary-icon {
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #35c8781c;
+    color: var(--green);
+    font-size: 28px;
+    border-radius: 13px;
+}
+
+/* ==============================
+   LISTA DE PRODUTOS
+============================== */
+
+.products-card {
+    padding: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.section-heading h3 {
+    font-size: 21px;
+    margin: 8px 0;
+}
+
+.lot-badge {
+    padding: 8px 12px;
+    color: var(--green);
+    background: #35c87819;
+    border: 1px solid #35c87840;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.message-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 15px;
+    margin: 25px 0 18px;
+    background: #101a14;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.product-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.product-list li {
+    padding: 15px 17px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+}
+
+.empty {
+    padding: 32px 15px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* ==============================
+   ENVIO
+============================== */
+
+.send-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding-top: 23px;
+    margin-top: 15px;
+    border-top: 1px solid var(--border);
+}
+
+.send-area strong {
+    font-size: 15px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.send-button {
+    padding: 14px 23px;
+    border: none;
+    border-radius: 9px;
+    background: var(--green);
+    color: #102017;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.send-button:hover {
+    background: #54e090;
+    transform: translateY(-2px);
+}
+
+.send-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ==============================
+   RODAPÉ
+============================== */
+
+body > footer,
+.reader-main-content > footer {
+    padding: 25px;
+    text-align: center;
+    color: #718077;
+    font-size: 10px;
+    letter-spacing: 1px;
+    border-top: 1px solid var(--border);
+}
+
+/* ==============================
+   RESPONSIVIDADE
+============================== */
+
+@media (max-width: 700px) {
+
+    .topbar {
+        height: auto;
+        min-height: 75px;
+        padding: 15px 5%;
+        gap: 12px;
+    }
+
+    .brand h1 {
+        font-size: 17px;
+    }
+
+    .brand p {
+        font-size: 8px;
+    }
+
+    .status {
+        font-size: 9px;
+    }
+
+    .container {
+        width: 92%;
+        margin: 30px auto;
+    }
+
+    .heading h2 {
+        font-size: 25px;
+    }
+
+    .reader-banner {
+        padding: 23px;
+    }
+
+    .reader-banner h3 {
+        font-size: 19px;
+    }
+
+    .sensor-icon {
+        width: 58px;
+        height: 58px;
+        font-size: 37px;
+    }
+
+    .summary-card,
+    .products-card {
+        padding: 20px;
+    }
+
+    .summary-info strong {
+        font-size: 21px;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+    }
+
+    .send-area {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .send-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .status {
+        max-width: 105px;
+        text-align: right;
+    }
+
+    .reader-banner {
+        gap: 10px;
+    }
+
+    .lot-badge {
+        font-size: 8px;
+    }
+}
+
+
+/* ==============================
+   TASK BAR DO LEITOR
+============================== */
+
+.reader-app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.reader-sidebar {
+    width: 255px;
+    min-width: 255px;
+    padding: 27px 18px;
+    display: flex;
+    flex-direction: column;
+    background: #151e18;
+    border-right: 1px solid var(--border);
+}
+
+.reader-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 9px 35px;
+}
+
+.reader-logo-icon {
+    width: 43px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--green);
+    color: #102017;
+    border-radius: 11px;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.reader-logo-area h2 {
+    font-size: 19px;
+}
+
+.reader-logo-area h2 span {
+    color: var(--green);
+}
+
+.reader-logo-area small {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    margin-top: 4px;
+}
+
+.reader-menu-label {
+    padding: 0 10px;
+    margin-bottom: 13px;
+    color: #738178;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+.reader-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.reader-nav-item {
+    min-height: 46px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #aab8ae;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.reader-nav-item:hover {
+    background: var(--surface-light);
+    color: var(--text);
+}
+
+.reader-nav-item.active {
+    color: var(--green);
+    background: #35c87819;
+    border: 1px solid #35c87835;
+}
+
+.reader-nav-icon {
+    font-size: 19px;
+}
+
+.reader-sidebar-bottom {
+    margin-top: auto;
+}
+
+.reader-system-status {
+    padding: 15px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+}
+
+.reader-status-indicator {
+    width: 9px;
+    height: 9px;
+    flex-shrink: 0;
+    background: var(--green);
+    border-radius: 50%;
+}
+
+.reader-system-status strong {
+    display: block;
+    font-size: 11px;
+}
+
+.reader-system-status small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.reader-sidebar-version {
+    display: block;
+    padding: 20px 10px 0;
+    color: #718077;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.reader-main-content {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .reader-sidebar {
+        width: 220px;
+        min-width: 220px;
+    }
+}
+
+@media (max-width: 700px) {
+    .reader-app-layout {
+        display: block;
+    }
+
+    .reader-sidebar {
+        width: 100%;
+        min-width: 0;
+        padding: 15px 5%;
+    }
+
+    .reader-logo-area {
+        padding-bottom: 18px;
+    }
+
+    .reader-menu-label,
+    .reader-sidebar-bottom {
+        display: none;
+    }
+
+    .reader-navigation {
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    .reader-nav-item {
+        flex: 1;
+        justify-content: center;
+        text-align: center;
+        font-size: 11px;
+    }
+}

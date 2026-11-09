@@ -61,11 +61,11 @@ def create_reader_app(controller: ReaderController) -> FastAPI:
     async def index() -> str:
         return controller.web_path
 
-    @application.get("/api/reader/status")
+    @application.get("/api/leitor/status")
     async def status() -> dict[str, Any]:
         return await controller.status()
 
-    @application.post("/api/reader/send")
+    @application.post("/api/leitor/enviar")
     async def send() -> dict[str, Any]:
         return await controller.send()
 

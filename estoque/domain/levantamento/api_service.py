@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Any, cast
 
-from estoque.api.schemas import InventoryResponse, ReportResponse
+from estoque.api.schemas import InventoryResponse
 from estoque.config import Settings
 from estoque.domain.produto.enitity import Produto, ProdutoLevantamento
 from estoque.infra.redis_cache import RedisCache
@@ -55,21 +55,6 @@ class InventoryService:
         self._database.add_readings(product_ids)
         await self._cache.delete("estoque:inventory:current")
         return await self.current()
-
-    async def submit(self) -> ReportResponse:
-        items = self._database.current_inventory()
-        report_id, created_at = self._database.save_report(items)
-        await self._cache.delete("estoque:inventory:current")
-        return ReportResponse(
-            report_id=report_id,
-            created_at=created_at,
-            items=items,
-            total_items=sum(item.quantidade for item in items),
-        )
-
-    def get_report(self, report_id: str) -> ReportResponse | None:
-        data = self._database.get_report(report_id)
-        return ReportResponse.model_validate(data) if data else None
 
     async def products(self) -> list[Produto]:
         version = self._database.catalog_version()
