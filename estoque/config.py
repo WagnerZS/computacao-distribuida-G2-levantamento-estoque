@@ -19,8 +19,6 @@ class Settings(BaseSettings):
     database_path: str = Field(default="estoque/dados/estoque.sqlite3", min_length=1)
     dir_dados: str = Field(default="estoque/dados/produtos.json", min_length=1)
 
-    # Configurações do cliente serial usado como ponte entre o sensor e a API.
-    serial_port: str | None = None
     api_url: str = Field(default="http://localhost:5000", min_length=1)
     reader_host: str = Field(default="0.0.0.0", min_length=1)
     reader_port: int = Field(default=5050, ge=1, le=65535)

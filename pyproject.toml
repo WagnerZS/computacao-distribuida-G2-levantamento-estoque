@@ -48,7 +48,7 @@ type-check = "basedpyright"
 [tool.basedpyright]
 include = ["estoque"]
 exclude = ["**/__pycache__", ".venv", ".ruff_cache"]
-allowedUntypedLibraries = ["serial_asyncio", "gpiozero"]
+allowedUntypedLibraries = ["gpiozero"]
 typeCheckingMode = "strict"
 pythonVersion = "3.12"
 reportUnknownMemberType = "none"
